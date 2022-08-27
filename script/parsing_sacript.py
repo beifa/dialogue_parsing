@@ -17,9 +17,10 @@ def parse_args():
 
 def skip_not_need(x: str) -> list:
     r"""
-    we have drop no needs rows because:
-       - grettings&names and org in first 3 row
-       - parting ends 3 row
+    we have drop rows because:
+       - grettings&names and organization in first 3 row
+       - goodbyes ends 3 row
+    we get 6 row for each manager
     """
     agg_val = x.tolist()
     return agg_val[:3] + agg_val[-3:]
@@ -98,12 +99,11 @@ def parse_same_ner(
         pbar.update(1)
     pbar.close()
     data.drop('index_text', axis=1).to_csv(path_save_file, index=False)
-    print(f'File saved on: {path_save_file}')
+    logger.info(f'File saved on: {path_save_file}')
 
 
 if __name__ == "__main__":
     assert spacy.__version__ >= '3.4.0', f'error version spacy, loaded version is {spacy.__version__}'
-    print('Start script')
     args = parse_args()
     logging.basicConfig(
         level=logging.INFO,
@@ -111,5 +111,6 @@ if __name__ == "__main__":
     )
     logger = logging.getLogger()
     logging.getLogger('pymorphy2').setLevel(logging.CRITICAL)
+    logger.info('Start script')
     data = pd.read_csv(args.path)
     parse_same_ner(data, args.spacy_model, args.path_save, args.verbose)
